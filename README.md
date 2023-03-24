@@ -1,0 +1,2 @@
+# KSE
+Kennlinienschreiber mit Encoder
