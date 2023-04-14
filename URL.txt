@@ -11,4 +11,7 @@ https://www.youtube.com/watch?v=DciN_z7VIQE       Kennlinienschreiber mit variab
 https://www.youtube.com/watch?v=N3BHx4Dii8s       Kennlinienschreiber: Vergleich npn BC548 mit pnp BC558     
 https://youtu.be/GRyDtGtvuMo                      Kennlinienschreiber: pnp-Kurven auf PC anzeigen mit Processing
 https://www.youtube.com/watch?v=cMN1_rT-Egc       Kennlinienschreiber : Ausgabe Kurven J-Fet auf PC mit Processing
-
+ 
+https://www.ebay.de/itm/374349976165?                                          Step-UP SDB628  Modul ebay  3V to 5V
+https://pdf1.alldatasheet.com/datasheet-pdf/view/1132508/SHOUDING/SDB628.html  Step-UP SDB628  Datasheet
+https://www.ebay.de/itm/373576726361?                                          Step-UP LTC1871 Modul ebay  3V to 15V
