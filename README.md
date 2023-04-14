@@ -1,6 +1,4 @@
-# KSE
-Kennlinienschreiber mit Encoder
-.
+
    Kleiner , feiner  Kennlinienschreiber
 
 
@@ -8,7 +6,7 @@ Wozu braucht man einen Kennlinienschreiber ?
 
 Reicht nicht ein Transistortester oder ein Voltmeter?
 Für einen ersten Check ist ein Transistortester sehr hilfreich, zumal er auch den Typ des Transistors  und die Pin-Belegung ermitteln und anzeigen kann.
-t. 
+
 Aber die Ausgabewerte beziehen sich dabei nur auf einen Arbeitspunkt (Kollektorstrom).
 Für den Schaltungsentwickler ist es aber oft wichtig, wie sich das Bauteil an verschiedenen
 Arbeitspunkten – z.B. Basisströmen – verhält.
@@ -45,12 +43,16 @@ Ich habe die bisherige Bedienung über das Touchpanel eliminiert und mache die P
 
 Der Nachbau ist wegen einiger SMDs  und der Verdrahtung einiger Platinen  komplexer und daher nicht unbedingt für „Anfänger“ geeignet. Bei einigen Spezial-ICs ist/war auch mit erheblichen Beschaffungszeiten (in Deutschland) zu rechnen.
 
-Basis ist ein Arduino-NANO(Clone), am besten mit vorinstalliertem Opti-Boot Loader [2,3,4], da man dort 1.5 kB mehr freien Flash-Speicher hat, ansonsten hat man nur ca 50 Byte Flash frei.
-(ATMega328 Board mit vorinstalliertem Opti-Boot-Loader: z.B. Arduino-UNO,Adafruit Metro Mini 328,  oder ein Board mit mehr Flash und Port-Pins (für Erweiterungen): ATMega2560 ).
-(Anmerkung:
-Auch das UNO-Board oder Adafruit Metro-Mini sind hier verwendbar, da ich die zusätzlichen rein analogen Pins des NANO (A6,A7) nicht benutze).
+Basis ist ein Arduino-NANO(Clone), am besten mit vorinstalliertem Opti-Boot Loader [2,3,4], da man dort 1.5 kB mehr freien Flash-Speicher hat, ansonsten hat man nur einige 100 Byte Flash frei.
 
-Das Adafruit-Board Metro Mini 328 hat neben der besseren Anordnung der Pins(alle digit.Pins und somit auch Pin13 (SPI-SCL)  auf einer Seite) auch die Möglichkeit, durch eine Lötbrücke die Pegel auf 3.3V zu setzen, sodass man für das Display und das HM-10 BLE-Modul keine Spannungsteiler zur Pegelanpassung benötigt.
+Anmerkung:
+ ATMega328 Board mit vorinstalliertem Opti-Boot-Loader: 
+ z.B. Arduino-UNO, Adafruit Metro Mini 328,  oder ein Board mit mehr Flash und Port-Pins (für Erweiterungen): ATMega2560 ).
+
+Anmerkung:
+Auch das UNO-Board oder Adafruit Metro-Mini sind hier verwendbar, da ich die zusätzlichen rein analogen Pins des NANO (A6,A7) nicht benutze.
+
+Das Adafruit-Board Metro Mini 328 hat neben der besseren Anordnung der Pins (alle digit.Pins und somit auch Pin13 (SPI-SCK)  auf einer Seite) auch die Möglichkeit, durch eine Lötbrücke die Pegel auf 3.3V zu setzen, sodass man für das Display und das HM-10 BLE-Modul keine Spannungsteiler zur Pegelanpassung benötigt.
 
 Der Mikroprozessor steuert zwei 12bit-DACs (im MCP4822 SPI) für die Uce Versorgung , ausserdem für die Basis/Gate-Ansteuerung einen 12 bit DAC (MCP4725-I2C) an, der über einen DC/DC-Wandler (5 V → 30V) und für den I2C Bus über einen ADUM1250/51 isoliert betrieben wird.  
 
@@ -74,7 +76,7 @@ die Werte (0V, 2V,4V ...10V) am Opamp TCA0372 ausgibt,
 DAC-A erzeugt die Zwischenwerte von 0.0mV, 0.5mV, 1.0mV.,..2000mV.
 Sie werden dann zu den aus DC-B erzeugten Werten addiert (zwei invertierende Verstärker hintereinandergeschaltet) , sodass insgesamt der Bereich von
 0V bis 12V in 0.5mV – Schritten mit sehr guter Linearität erzeugt werden kann.
-Diese Auflösung ist zwar etwas übertrieben, bei kleinen Spannungswerten (z.B. Kennlinie von Shottky-Dioden oder im Anfangsbereich der Kurven von bipolar bzw. Feldeffekttransistoren) bringt das aber was, auch wird durch „Oversampling“ der Mittelwert der Messungen zum gleichen x_Wert gebildet
+Diese Auflösung ist zwar etwas übertrieben, bei kleinen Spannungswerten (z.B. Kennlinie von Shottky-Dioden oder im Anfangsbereich der Kurven von bipolar bzw. Feldeffekttransistoren) bringt das aber was, auch wird durch eine Art „Oversampling“ der Mittelwert der Messungen zum gleichen x_Wert gebildet
 
 Der Summierverstärker TCA0372 mit Verstärkung +1 für DAC_A und Verstärkung +10 für DAC_B ist in Abbildung 1 skizziert.
 Da der TCA0372 kein Rail-to Rail Vertärker ist, benötigt er eine negative Hilfsspannung: 
@@ -83,22 +85,48 @@ Damit erhält man auch in Nullpunktsnähe saubere Kurven, gerade die 1, 2, 3V Sk
 
 Stromversorgung
 
-Versorgt wird der Kennlinienschreiber aus einer einzelnen Lion-Akku-Zelle (18650), die Spannung für das NANO-Board  (7.5 V) wird mit einem Aufwärtswandler (MT3608) erzeugt. Ein zweiter MT3608 dient zur Versorgung des TCA0372-Verstärkerboards mit 15V.
-Der MT3608 hat den Vorteil, dass er ab ca 2,5V funktioniert (wichtig, da nur eine Lion-Zelle
-benutzt wird (ca3V …. 4,2V). Ausserdem arbeitet er mit ca 1.2 MHz, sodass bei den niedrigen Frequenzen wenig Störungen auftreten.
+Versorgt wird der Kennlinienschreiber aus einer einzelnen Lion-Akku-Zelle (18650).
+Es werden zwei Spannungen benötigt:
+   5V für  Adafruit Metro mini bzw. 7,5V Arduino NANO) , an der auch das Diplay und die KonstantStromquelle hängen, und ca.
+ 15V zur Versorgung des TCA0372-Verstärkerboards (Uce).
 
-Etwas kritisch ist seine Einstellung/Inbetriebnahme, da der Schleifer des 10-Gang-Trimmers direkt mit dem FB(feedback-Pin 3)  verbunden ist und am oberen Anschlag die Ausgansspannung direkt mit FB  verbunden ist, der wohl nur 0.6V ? verträgt.
-Man sollte also vor Anlegen der Eingansspannung den Regler mit ein paar Umdrehungen aus der oberenAnschlagsposition bringen (und zwar nach höheren Ausgansspannungswerten , d.h. nach links drehen   chinesische Logik ??)   [5,6],
+Die zuerst untersuchte Lösung mit zwei MT3608 Modulen funktionierte stabil nur für die 15V Versorgung, bei der Microprocessorversorgung brach die Spannung bereits bei einer Akkuspannung von 3.9V ein.
+
+Die Qualität der MT3608-Module  – neben der riskanten Inbetriebnahme (siehe unten) – ist aber sehr unterschiedlich, sodass ich auch eher andere Module verwenden würde.
+Die ICs MT3608, SDB628 und SX1308 scheinen – auch vom Datenblatt – identisch zu sein.
+Aber die Module haben unterschiedliches Layout und wohl auch unterschiedliche Bestückung.
+
+Die Kondensatoren C1 C2 sollten 22µF haben, bei den von mir untersuchten Modulen lagen sie 
+unter 10 µF.
+
+Es funktioniert sehr gut mit einem kleinen SX1308-Modul, bei dem bei mir aber ein SDB628 StepUp-Wandler IC aufgelötet war. 
+
+Das Modul ist ähnlich wie das MT3608-Modul aufgebaut, aber
+niederohmiger: 
+10 k anstelle 100k Trimmer und 200 Ohm gegen Masse anstelle 2.2k. [9]
+
+Es ist bei 15V mit mehr als 150mA belastbar und funktioniert bereits ab ca 2.7 V.
+Es ist auch für die 5V / 7,5V Vesrorgung sehr gut geeignet.
+
+Für die 5 bzw. 7.5V verwende ich momentan ein kleines Modul mit festen Spannungswerten  (5V,8V,9V,12V). Es ist wohl ein SDB628 verbaut ( identisch mit MT3608 / SX1308?)  das Modul funktioniert sogar  bis unter 3V Eingansspannung. [10]
+
+Anmerkung MT3608:
+Etwas kritisch ist die Einstellung/Inbetriebnahme, da der Schleifer des 10-Gang-Trimmers direkt mit dem FB (Feedback-Pin 3)  verbunden ist und - am oberen Anschlag  -  die Ausgansspannung direkt mit FB  verbunden ist, der wohl nur 0.6V ? verträgt.
+Man sollte also vor Anlegen der Eingansspannung den Regler mit ein einigen Umdrehungen aus der oberenAnschlagsposition bringen (und zwar nach höheren Ausgansspannungswerten , d.h. nach links drehen   chinesische Logik ??)   [5,6],
 
 Um Energie zu sparen, wird die 15V Versorgung erst aktiviert, wenn die Kurven aufbereitet werden.
-Die 7.5V stehen nach Einschalten für das Microprocessor Board gleich zur Verfügung, an dem u.a.  das Display und die Konstanstromquelle hängen, die aber weniger al 1W benötigt.
-Das NANO Board benötigt incl. Display ca 400 mA im Betrieb, beim Einschalten aber über 1 A.
+Die 7.5V / 5V  stehen nach Einschalten für das Microprocessor Board gleich zur Verfügung, an dem u.a.  das Display und die Konstanstromquelle hängen, die aber weniger als 1W benötigt.
 
-Das Adafruit Board braucht wegen eines bessern Reglers bei 3.3V deutlich weniger, auch reichen hier ca 6V am Eingang.
+Beim Einschalten sind die Ströme - auch wegen der Kondensatoren - deutlich höher.
+
+Das Adafruit Board braucht wegen eines besseren LD-Reglers , auch reichen hier 5V am  herausgeführten USB-Eingang.
+9],[10],[11]
+
+Testen von Bauteilen
 
 Nach diesem technischen Überblick mal etrwas mehr zum Test-Ablauf:
 
-Nach dem Einschalten erscheint auf dem Display der Startbildschirm , auf dem an der linken Seite nur drei grosse Icons erscheinen mit Auswahlfeldern (Buttons) für:
+Nach dem Einschalten erscheint auf dem Display der Startbildschirm , auf dem an der linken Seite nur drei grosse Icons  aufleuchten mit Auswahlfeldern (Buttons) für:
     •  bipolar Transistoren (inclusive Dioden)
     •  Mosfets
     •  Junction-Fets (incl. n-Depletion-Mode-Mosfets)
@@ -106,7 +134,7 @@ Nach dem Einschalten erscheint auf dem Display der Startbildschirm , auf dem an 
 die über einen Drehencoder angesteuert werden.
 Die Aktivierung einer Schaltfläche erfolgt durch Drehen des 2. Encoders.
 Daraufhin werden im oberen Bereich zwei Schaltflächen („P“ bzw „N“) zum Starten des Messvorgangs angezeigt, vorher sollte man aber die unterhalb in zwei Spalten dargestellten Parameter begutachten  und eventuell modifizieren.
-Im mittleren Display Bereich die Parameter: 
+Im mittleren Display Bereich an der linken Seite  die Parameter: 
 
     •  min:   minimaler Wert (Basisstrom bzw. Gatespannung), mit dem der Messvorgang gestartet werden soll
     •  incr: Schrittweite, mit der Basisstrom bzw. Gatespannung erhöht werden soll
@@ -115,25 +143,28 @@ Im mittleren Display Bereich die Parameter:
 Die Basisströme werden in µA eingetragen, die Gatespannung in 100mV Schritten.
  Von einer Diode wird dann ausgegangen, wenn bei  „bipolar“ das Feld  incr: auf 0 gesetzt wird.
 
-Am linken Rand des Displays werden folgende Parameter angezeigt:
+Am rechten Rand des Displays werden folgende Parameter angezeigt:
 
-    •   Bluet/CCS: Transfer der Daten mit BLE 4.0 an PC bzw Smartphone, bzw Kostantstrom/Konstantspannungs-Betrieb
+    •   Bluet/CCS: Transfer der Daten mit BLE 4.0 an PC bzw Smartphone,  bzw.    Konstantspannungs-Konstantspannungs-Betrieb
     •   x-scale[V]:    Länge der x-Skala  ( 1V,  2V,  3V,  4V,  6V,  12V)
     •   y-scale[mA]  Höhe   der y-Skala ( 2 mA, 5 mA, 10 mA, 20 mA, 50 mA, 100 mA)
 Anmerkung: 
- Feld Bluet/CCS = 1       Ausgabe der Kennliniendaten über Bluetooth an Smartphone 
-                           = 2,...6  Umschalten auf Konstantspannungsquelle, Konstantstromquelle bzw. 
-                                        Treppenestufengenerator. 
-Die Verwaltung der Parameter erfolgt ähnlich wie beim Startbildschirm beschrieben, zwischen den Feldern springt man durch Drehen des Encoders 2, Auswahl eines Paramters durch mit dem anderen Encoder 1, ändern der Parameter duch Encoder-Drehung, Speichern/Verlassen des Parameters durch Encoder 2.
+ Feld Bluet/CCS = 0         Ausgabe der Kennliniendaten 
+                            = 1        Ausgabe der Kennliniendaten auch über Bluetooth an Smartphone etc. 
+                            = 2        Umschalten auf Konstantspannungsquellen-Betrieb
+                            = 3        Umschalten auf  Konstantstromquellen-Betrieb   
+                            = 4,5 ,6 Treppenstufengenerator. 
+                            
+Die Verwaltung der Parameter erfolgt ähnlich wie beim Startbildschirm beschrieben, zwischen den Feldern springt man durch Drehen des Encoders 2, Auswahl eines Paramters durch mit dem anderen Encoder, ändern der Parameter duch Encoder-Drehung, Speichern/Verlassen des Parameters durch den andren Encoder.
 
-Ist man mit den Einstellungen zufrieden, startet man den Messvorgang / Kurven mit Drehen des anderen Encoders: „P“  (für p-Devices) bzw. “N“ (für n-Devices) r 
-Hier hat man eine geringe Wartezeit zum aktivieren, in der man nochmals die Parameter prüfen sollte. In dieser Wartephase blinkem die aktivierten Felder P  bzw N.
+Ist man mit den Einstellungen zufrieden, startet man den Messvorgang / Kurven durch Positionieren mit dem  Encoder auf Feld „P“  (für p-Devices) bzw. “N“ (für n-Devices)  
+Hier hat man eine geringe Wartezeit zum Aktivieren, in der man nochmals die Parameter prüfen sollte. In dieser Wartephase blinken die aktivierten Felder P  bzw N. Durch drehen des anderen Encoders startet man dann den Messvorgang.
 
 Erst jetzt sieht man die ausgewählten Skalen und im oberen Bereich das ausgewählte Device inclusive Icon.
 
-Die Kurven werden vom x-0-Punkt aufgebaut und zusätzliche Daten (wie z.B. beta/hfe beim npn/pnp und der Basisstrom/Gatespannung )  am Ende der Kurven eingetragen.
+Die Kurven werden vom x-y-0-Punkt aufgebaut und zusätzliche Daten (wie z.B. beta/hfe beim npn/pnp und der Basisstrom/Gatespannung )  am Ende der Kurven eingetragen.
 
-Am Ende der Messung bleibt der Bildschirm mit den dargestellten Kurve stehen und es erscheint links oben eine Anfrage / Aufforderung,
+Am Ende der Messung bleibt der Bildschirm mit den dargestellten Kurve stehen und es erscheint links oben eine Anfrage / Aufforderung in zeitlichem Abstand :
 
 
     •   ob man die Messung beenden will  („Stop ?“)
@@ -141,19 +172,25 @@ Am Ende der Messung bleibt der Bildschirm mit den dargestellten Kurve stehen und
     •   ob man das gerade dargestellte Bauteil mit einem Bauteil gleicher Polarität vergleichen will („Compare ?“) 
     •   ob man das gerade dargestellete Bauteil mit einem Bauteil anderer Polarität vergleichen will („Complem. ?“)  (komplementär-Typ z.B. antiparallele Diode)
 
+Die Auswahl erfolgt wieder durch Encoderdrehung zu dem gerade angezeigten Aufforderung.
 
 Anmerkung:
 
-Will man z.B. die Kennlinien von einem n-Device mit einem p-Device vergleichen, ermittelt man zuerst normal die Kennlinien des n-Devices, tauscht das n gegen das p-Device in der Textool Messfassung und startet den Vergleich durch Auswahl des Feldes „Complementary“ mit Encoder und Aktivierung mit Taster.
-Sofort werden die Kennlinien des p-Devices zusätzlich in einer anderen Farbe auf dem Display dargestellt („Komplementärtyp“).
+Will man z.B. die Kennlinien von einem n-Device mit einem p-Device vergleichen, ermittelt man zuerst normal die Kennlinien des n-Devices, tauscht das n gegen das p-Device in der Textool Messfassung und startet den Vergleich 
+durch Auswahl des Feldes „Complementary“ mit dem Encoder .
+
+Es werden die Kennlinien des p-Devices zusätzlich in einer anderen Farbe auf dem Display dargestellt („Komplementärtyp“).
 
 
-Vergleich von Komponenten gleicher Polarität erfolgt entsprechend durch Auswahl des Feldes „Compare“.
+Vergleich von Komponenten gleicher Polarität erfolgt entsprechend 
+durch Auswahl des Feldes „Compare“.
+ 
 
    Speicherung geänderter Parameter-im internen EEPROM
 
 Die festgelegten Parameter werden beim Start der Kurven im internen EEPROM hinterlegt , 
 sodass man auch beim Einschalten des Geräts die letzt eingegebenen Parameter angezeigt bekommt. 
+
 
 Im EEPROM sind dafür folgende Adressen belegt:
 
@@ -220,8 +257,12 @@ Folgende Werte werden mit Separator Linefeed (“\n“ ) übertragen:
     • U : Diodenspannung Ud bei Idiode in mV (Fluss bzw. Sperrspannung bei Zener < 12V)
     • Z : Ende der Kurve
 
+
 Anmerkung  Bei ausgeschaltetem HM-010 Modul (BLE 4.0) können in Stellung  Bluet./CCS = 1
 obige Parameter über USB an den PC übertragen werden und z.B. mit TeraTerm überwacht werden.
+
+
+
 
 Verwendung als präzise KonstantSpannungsquelle
 
@@ -229,6 +270,8 @@ Der Modus:  Konstantspannungsquelle wird mit  Bluet./CCS = 2  aktiviert :
 
 hier kann man bei dem Parameter  min.incr und max:  den den Spannungswert
 bis maximal 12 V angeben. 
+
+
 
 Verwendung als präzise Konstantstromquelle
 
@@ -238,16 +281,13 @@ hier kann man bei dem Parameter  max:  den den Konstanstrom in µA (1...4000) an
 
 
 
-
-
-
 Verwendung als Treppenstufengenerator
 
 Der Modus:  Treppenstufengenerator wird mit  Bluet./CCS  >= 4  aktiviert :
 
     • 4:  nur Stromwerte steigen von min::  µA bis max:  µA mit Schrittweite incr: µA
-    • 5:  Stromwerte steigen und fallen wie bei 4:  
-    • 6:  Stromwerte steigen und fallen wie bei 4:  mit Umschaltung Strom in negative Richtung (Treppenkarven von  maximal +4V … 0   -4V )
+    • 5:  Stromwerte steigen (wie bei   4: ) und fallen 
+    • 6:  Stromwerte steigen und fallen wie bei 5 :  mit Umschaltung Strom in negative Richtung (Treppenkurven von  maximal +4V … 0   -4V )
 Die Verweildauer pro Stufe in µs wird über die Parameter x-scale und y-scale festgelegt.
 
 Die Frequenz ergibt sich aus der Verweildauer und der über die Parameter-
@@ -266,7 +306,8 @@ Für manche Anwendungen ist der Spannungsbereich (Uce <= 12V)-
    bis ca 10 mA leicht durch Ersetzen des Messwiderstandes  (250 Ohm) der CCS auf z.B 100 Ohm.
    Oberhalb muss man wohl u.a. auch den DC/DC-Wandler (1W/30V) wechseln und das Platinenlayout und den Mosfet entsprechend anpassen.
 
-    • Schnittstelle zum Transitortester( „TT“):
+
+    • Schnittstelle zum Transistortester( „TT“):
 
             automatische Erkennung des Bauteils inclusive Pin-Zuordnung. 
 Das ist mit dem NANO mit der jetzt integrierten Funktionalität nicht möglich, da der Flashspeicher bereits zu 99% belegt ist. Man müsste dann auf einen anderen Microprozessor zurückgreifen, z.B. den ATMega2560, der dazu auch noch eine Menge Port-Pins zur Verfügung stellt. 
@@ -278,9 +319,19 @@ Ich hab das mal – in einer einfacheren Version – mit einem NANO (+ Portexpan
  -.. Starten Kennlineinschreiber mit den Steuerungs-/Schalt-Daten vom TT .
 Das hat damals – mit erheblichen Schaltungsaufwand – gut funktioniert.
 
+
+
     • Speichern auf SD-Karte 
   Speichern auf SD-Karte ist nur mit „grösserem“ Prozessor (ATMega2560) siehe oben möglich,
   da die Bibliotheken viel Platz benötigen .
+
+
+
+
+
+
+
+
 
    Hardware-Komponenten
 
@@ -298,44 +349,50 @@ hier sind jetzt nur die wesenlichen Komponenten / Module aufgeführt, die Detail
     • Textool Fassung
     • Dreh-Encoder (2 Stück)
     • 10 x PhotoMosrelais (z.B. TLP222A)  
-    • 2 x MT3608 boards ( 3 V..4.2V --> 7,5V bzw. --->15 V)
+    • 2 x SX1308 Module s ( 3 V..4.2V --> 7,5V bzw. --->15 V)
     • Lion-Akku incl. Halterung
     • Lademodul Lion-Akku
     • HM-10 Module Bluetooth 4.0
 
 
-      für diese Komponenten hab ichetwa  80  € ausgegeben, momentan ist aber mit höheren
+      für diese Komponenten hab ich etwa  80  € ausgegeben, momentan ist aber mit höheren
       Preisen zu rechnen.
-
 
 [1] https://www.instructables.com/Transistor-Curve-Tracer/
 [2] GitHub - Optiboot/optiboot: Small and Fast Bootloader for Arduino and other Atmel AVR chips 
 [3]  Neusten Bootloader flashen auf Arduino Nano China clone – Thing King – Technik & DIY (thing-king.de)
 [4] How do I install optiboot on the newest arduino IDE? - Using Arduino / Programming Questions - Arduino Forum 
+
 [5] https://chips-and-more.com/cm/pdf/K3608.pdf
 [6] https://datasheetspdf.com/pdf-file/909246/AEROSEMI/MT3608/1
 [7] https://www.youtube.com/watch?v=7WQflcy4CrQ
 [8] https://www.youtube.com/watch?v=ybFWR0rq9jg
+[9] https://www.ebay.de/itm/234763127214?_trkparms=amclksrc%3
+[10} https://www.ebay.de/itm/374349976165?hash=item5728ff5265
+[11] https://www.ebay.de/itm/374349976165?            //  Step-UP SDB628  Modul ebay  3V to 5V
+[12] https://pdf1.alldatasheet.com/datasheet-pdf/view/1132508/SHOUDING/SDB628.html   
+                                                            // Step-UP SDB628  Datasheet
+
 
 
        Vergleich n-JFet BF256B mit p-JFet J176 Skala 6V 10mA
-[9] https://www.youtube.com/shorts/95HiBvJB_0A
+[13] https://www.youtube.com/shorts/95HiBvJB_0A
        NPN Skala: 2V, 5mA Parameter über Dreh-Encoder
-[10] https://www.youtube.com/shorts/zspOeL5-aKM
+[14] https://www.youtube.com/shorts/zspOeL5-aKM
        Kennlinienschreiber mit Präzisionskonstantstromquelle
-[11] https://www.youtube.com/watch?v=6bx0Xuingm4
+[151] https://www.youtube.com/watch?v=6bx0Xuingm4
        Vergleich n-JFet BF256B mit p-JFet J176 Skala 1V 5mA
-[12] https://www.youtube.com/shorts/LGOkdHCgLTI
+[16] https://www.youtube.com/shorts/LGOkdHCgLTI
         npn Test mit incr. 2,4,10,20 µA, Skala 4V 5mA
-[13] https://www.youtube.com/watch?v=azDgB1QcklA&t=22s
+[17] https://www.youtube.com/watch?v=azDgB1QcklA&t=22s
        NPN Basistrom 5µA ... 240µA
-[14] https://www.youtube.com/shorts/C6GhPL9V9Fg
+[18] https://www.youtube.com/shorts/C6GhPL9V9Fg
       Kennlinienschreiber als bipolare Konstanstromqelle : Bereich 0 µA ... +/-1 mA
-[15] https://www.youtube.com/watch?v=UbXDh1cYR88
+[19] https://www.youtube.com/watch?v=UbXDh1cYR88
       Kennlinienschreiber mit variablen Treppenstufengenerator
-[16] https://www.youtube.com/watch?v=DciN_z7VIQE
+[20] https://www.youtube.com/watch?v=DciN_z7VIQE
       Kennlinienschreiber: Vergleich npn BC548 mit pnp BC558
-[17] https://www.youtube.com/watch?v=N3BHx4Dii8s
+[21] https://www.youtube.com/watch?v=N3BHx4Dii8s
 
 
 
