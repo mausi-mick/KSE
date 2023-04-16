@@ -227,11 +227,11 @@ Im EEPROM sind dafür folgende Adressen belegt:
     •   52: minimale StepWeite für Eingabe max: ( Feld 46 )
     •   54: minimale StepWeite für Eingabe incr:: ( Feld 48 )
 
-Ausserdem kann man den Bauteil-Namen (z.B. BC548C  oder auch andere Informationen) im internen EEProm ab Adresse 60 hinterlegen: 
+Ausserdem kann man den Bauteil-Namen (z.B. BC548C  oder auch andere Informationen) im internen EEProm ab Adresse 100/101 hinterlegen: 
 
-    •   60: Länge des Textfeldes 
-    •   62  Text 1. Byte
-    •   63  Text 2. Byte
+    •   100: Länge des Textfeldes 
+    •   101: Text 1. Byte
+    •   102: Text 2. Byte
     •  ...
  das Textfeld wird im Display unterhalb der P / N Buttons angezeigt und ist über einen Encoder basierten kleinen Editor verwaltbar – maximal 11 Einträge.
 : 
